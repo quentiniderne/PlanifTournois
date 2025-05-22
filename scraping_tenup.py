@@ -4,8 +4,8 @@ import csv
 import time
 import re
 
-ID_DEBUT = 141907
-ID_FIN = 141917
+ID_DEBUT = 143372
+ID_FIN = 143382
 MAX_ERREURS = 20
 
 colonnes = [
@@ -61,13 +61,18 @@ def parse_tournoi(url, idtournoi):
     mailja_div = soup.select_one(".tournoi-detail-page-inscription-email .details-bloc a")
     mailja = clean(mailja_div.text) if mailja_div else ""
 
+######### Classements et tout ce qui gravite autour
+
     types_epreuve = {"SM": 0, "SD": 0, "DM": 0, "DD": 0, "DX": 0}
     cat_flags = {"Senior": 0, "Junior": 0}
-    classementSM = ""
-    classementSD = ""
+    classement_par_epreuve = []
+
     tarif_senior = ""
     tarif_junior = ""
     format_jeu = ""
+
+    classementSM = ""
+    classementSD = ""
 
     blocs_epreuves = soup.select("div.cartouche-epreuve-inner")
 
@@ -75,22 +80,13 @@ def parse_tournoi(url, idtournoi):
         titre_div = bloc.select_one(".epreuve-detail-titre")
         titre_txt = clean(titre_div.text) if titre_div else ""
 
+        # Détection des catégories
         if "senior" in titre_txt.lower():
             cat_flags["Senior"] = 1
         if "junior" in titre_txt.lower():
             cat_flags["Junior"] = 1
 
-        if "simple messieurs" in titre_txt.lower():
-            types_epreuve["SM"] = 1
-        elif "simple dames" in titre_txt.lower():
-            types_epreuve["SD"] = 1
-        elif "double messieurs" in titre_txt.lower():
-            types_epreuve["DM"] = 1
-        elif "double dames" in titre_txt.lower():
-            types_epreuve["DD"] = 1
-        elif "double mixte" in titre_txt.lower():
-            types_epreuve["DX"] = 1
-
+        # Tarifs
         tarifs_divs = bloc.select("div.epreuve-detail-tarif-detail")
         for t in tarifs_divs:
             ttxt = t.text.lower()
@@ -99,34 +95,42 @@ def parse_tournoi(url, idtournoi):
             elif "jeune" in ttxt or "junior" in ttxt:
                 tarif_junior = clean(t.text.split(":")[-1])
 
+        # Format
         if not format_jeu:
             format_div = bloc.select_one(".epreuve-detail-format")
             if format_div:
-                m = re.search(r"Format\\s*:\\s*(\\d)", format_div.text)
+                m = re.search(r"Format\s*:\s*(\d)", format_div.text)
                 if m:
                     format_jeu = m.group(1)
 
-        # Recherche du classement
-        classement_txt = ""
-        for div in bloc.select("div"):
-            text = div.get_text(strip=True)
-            if re.search(r"classement\\s*:", text, flags=re.I):
-                m = re.search(r"classement\\s*:\\s*([^\n\r]*)", text, flags=re.I)
-                if m:
-                    possible_classement = m.group(1).strip()
-                    classement_txt = re.match(r"^[A-Za-z0-9/ .\-]+", possible_classement)
-                    classement_txt = classement_txt.group(0).strip() if classement_txt else possible_classement
-                break
+        # Types d'épreuve
+        nature_txt = titre_txt.split()[0].upper() if titre_txt else ""
+        if nature_txt in types_epreuve:
+            types_epreuve[nature_txt] = 1
 
-        if "simple messieurs" in titre_txt.lower():
-            classementSM = classement_txt
-        elif "simple dames" in titre_txt.lower():
-            classementSD = classement_txt
+        # Classement
+        classement_div = bloc.select_one(".epreuve-detail-classement-detail")
+        if classement_div:
+            classement_txt = classement_div.text.strip()
+            if classement_txt.lower().startswith("classement"):
+                classement_nettoye = re.sub(r"(?i)^classement\s*:\s*", "", classement_txt).strip()
+                # Nettoyage pour garder uniquement ce qui ressemble à un classement (exemple "2/6 - -15")
+                # On garde tout ici car ça peut contenir des tirets
+                if "simple messieurs" in titre_txt.lower() or "sm" in titre_txt.lower():
+                    classementSM = classement_nettoye
+                    print(f"[DEBUG] Classement SM trouvé : {classementSM}")
+                elif "simple dames" in titre_txt.lower() or "sd" in titre_txt.lower():
+                    classementSD = classement_nettoye
+                    print(f"[DEBUG] Classement SD trouvé : {classementSD}")
 
-    if tarif_senior.replace("€", "").strip() in ["0", "0.00", "0,00"]:
+    # Si pas de Senior/Junior explicite, mais tarif senior à 0€, on déduit automatiquement
+    if tarif_senior.replace("€", "").strip() in ["0", "0,00"]:
         if types_epreuve["DM"] == 0 and types_epreuve["DD"] == 0 and types_epreuve["DX"] == 0:
             cat_flags["Junior"] = 1
             cat_flags["Senior"] = 0
+
+
+######### Fin classements
 
     return {
         "idtournoi": int(idtournoi),
