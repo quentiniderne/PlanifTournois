@@ -10,8 +10,8 @@ MAX_ERREURS = 20
 
 colonnes = [
     "idtournoi", "libtournoi", "typetournoi", "datdeb", "datfin",
-    "classementSM", "classementSD", "surface", "adresse", "tarif_senior", "tarif_junior", "dotation",
-    "format", "libja", "numja", "mailja", "SM", "SD", "DM", "DD", "DX", "Senior", "Junior"
+    "classementSM", "classementSD", "classementSX", "surface", "adresse", "tarif_senior", "tarif_junior", "dotation",
+    "format", "libja", "numja", "mailja", "SM", "SD", "SX", "DM", "DD", "DX", "Senior", "Junior"
 ]
 
 def clean(text):
@@ -39,7 +39,22 @@ def parse_tournoi(url, idtournoi):
     datfin = clean(soup.select_one("span.tournoi-detail-page-date-fin").text) if soup.select_one("span.tournoi-detail-page-date-fin") else datdeb
 
     surfaces = soup.select("span.tournoi-detail-page-competition-surfaces-content")
-    surface = " / ".join([clean(s.text) for s in surfaces]) if surfaces else ""
+    surface = " , ".join([clean(s.text) for s in surfaces]) if surfaces else ""
+    # # Liste des surfaces connues
+    # SURFACES_LIST = ["Résine", "Béton Poreux", "Terre Battue Traditionnelle", "Terre Battue Artificielle", "Gazon Synthétique"]
+
+    # # Extraction de toutes les surfaces présentes dans la page
+    # all_text = soup.get_text(separator=" ", strip=True)
+    # surfaces_detectées = []
+
+    # for surface in SURFACES_LIST:
+    #     if re.search(rf"\b{re.escape(surface)}\b", all_text, re.IGNORECASE):
+    #         surfaces_detectées.append(surface)
+
+    # # Tri et suppression des doublons
+    # surface_txt = ", ".join(sorted(set(surfaces_detectées)))
+    # print(f"[DEBUG] Surfaces détectées : {surface_txt}")
+
 
     dotation = clean(soup.select_one("span.tournoi-detail-page-competition-dotation-content").text) if soup.select_one("span.tournoi-detail-page-competition-dotation-content") else ""
 
@@ -63,7 +78,7 @@ def parse_tournoi(url, idtournoi):
 
 ######### Classements et tout ce qui gravite autour
 
-    types_epreuve = {"SM": 0, "SD": 0, "DM": 0, "DD": 0, "DX": 0}
+    types_epreuve = {"SM": 0, "SD": 0, "SX":0, "DM": 0, "DD": 0, "DX": 0}
     cat_flags = {"Senior": 0, "Junior": 0}
     classement_par_epreuve = []
 
@@ -73,6 +88,7 @@ def parse_tournoi(url, idtournoi):
 
     classementSM = ""
     classementSD = ""
+    classementSX = ""
 
     blocs_epreuves = soup.select("div.cartouche-epreuve-inner")
 
@@ -122,6 +138,9 @@ def parse_tournoi(url, idtournoi):
                 elif "simple dames" in titre_txt.lower() or "sd" in titre_txt.lower():
                     classementSD = classement_nettoye
                     print(f"[DEBUG] Classement SD trouvé : {classementSD}")
+                elif "simple mixte" in titre_txt.lower() or "sm" in titre_txt.lower():
+                    classementSX = classement_nettoye
+                    print(f"[DEBUG] Classement SX trouvé : {classementSX}")
 
     # Si pas de Senior/Junior explicite, mais tarif senior à 0€, on déduit automatiquement
     if tarif_senior.replace("€", "").strip() in ["0", "0,00"]:
@@ -140,6 +159,7 @@ def parse_tournoi(url, idtournoi):
         "datfin": datfin,
         "classementSM": classementSM,
         "classementSD": classementSD,
+        "classementSX": classementSX,
         "surface": surface,
         "adresse": adresse,
         "tarif_senior": tarif_senior.replace("€", "").replace(",", "."),
@@ -151,6 +171,7 @@ def parse_tournoi(url, idtournoi):
         "mailja": mailja,
         "SM": types_epreuve["SM"],
         "SD": types_epreuve["SD"],
+        "SX": types_epreuve["SX"],
         "DM": types_epreuve["DM"],
         "DD": types_epreuve["DD"],
         "DX": types_epreuve["DX"],
