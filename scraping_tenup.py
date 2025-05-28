@@ -4,8 +4,8 @@ import csv
 import time
 import re
 
-ID_DEBUT = 143372
-ID_FIN = 143382
+ID_DEBUT = 141900
+ID_FIN = 142000
 MAX_ERREURS = 20
 
 colonnes = [
@@ -53,7 +53,7 @@ def parse_tournoi(url, idtournoi):
 
     # # Tri et suppression des doublons
     # surface_txt = ", ".join(sorted(set(surfaces_detectées)))
-    # print(f"[DEBUG] Surfaces détectées : {surface_txt}")
+    print(f"[DEBUG] Surfaces détectées : {surface}")
 
 
     dotation = clean(soup.select_one("span.tournoi-detail-page-competition-dotation-content").text) if soup.select_one("span.tournoi-detail-page-competition-dotation-content") else ""
@@ -193,8 +193,8 @@ for i in range(ID_DEBUT, ID_FIN + 1):
         erreurs_consecutives = 0
         time.sleep(0.5)
         if i % 20 == 0:
-            print("⏸ Pause 10s pour limiter surcharge...")
-            time.sleep(10)
+            print("⏸ Pause 5s pour limiter surcharge...")
+            time.sleep(5)
     except Exception as e:
         erreurs_consecutives += 1
         print(f"⚠️ Erreur ({erreurs_consecutives}/{MAX_ERREURS}) — {str(e)}")
