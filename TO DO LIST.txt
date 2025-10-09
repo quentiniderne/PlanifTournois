@@ -1,0 +1,14 @@
+TO DO LIST :
+
+- Faire une signup et signin page -> si on trouve pas l'id dans mon x_users alors on crée une ligne (checker login chez Loan)
+- Faire une signout page
+- Faire une page paramètre pour faire son profil
+- Finir les filtres
+- Faire des conservations de filtres
+- Faire une landing page
+- Vercel
+
+2nd temps :
+- Gérer les adresses et les distance/temps -> voir si possible de faire qqc avec api google maps
+- Si on trouve N1 dans "classement", alors "Open"
+- Gérer les types de joueurs (compet, loisir, proche de chez lui,..)

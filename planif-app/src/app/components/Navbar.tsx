@@ -21,7 +21,7 @@ export default function Navbar() {
           className={`pb-1 border-b-2 ${
             pathname === href
               ? 'text-primary border-primary'
-              : 'text-gray-500 border-transparent hover:border-gray-300'
+              : 'text-black-500 border-transparent hover:border-black-300'
           }`}
         >
           {label}

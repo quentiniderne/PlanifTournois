@@ -142,11 +142,11 @@ def parse_tournoi(url, idtournoi):
                     classementSX = classement_nettoye
                     print(f"[DEBUG] Classement SX trouvé : {classementSX}")
 
-    # Si pas de Senior/Junior explicite, mais tarif senior à 0€, on déduit automatiquement
-    if tarif_senior.replace("€", "").strip() in ["0", "0,00"]:
-        if types_epreuve["DM"] == 0 and types_epreuve["DD"] == 0 and types_epreuve["DX"] == 0:
-            cat_flags["Junior"] = 1
-            cat_flags["Senior"] = 0
+    # Si pas de Senior/Junior explicite, mais tarif junior à 0€, on déduit automatiquement senior
+    if tarif_junior.replace("€", "").strip() in ["0", "0,00"]:
+        if types_epreuve["SM"] == 0 and types_epreuve["SD"] == 0 and types_epreuve["SX"] == 0:
+            cat_flags["Senior"] = 1
+            cat_flags["Junior"] = 0
 
 
 ######### Fin classements
