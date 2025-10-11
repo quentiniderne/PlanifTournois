@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import MainLayout from '@/app/components/MainLayout';
 import { Button } from "@/components/ui/button";
