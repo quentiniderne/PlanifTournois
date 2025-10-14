@@ -16,7 +16,7 @@ export default function Home() {
 
 	useEffect(() => {
 		async function fetchData() {
-			const query = supabase.from('x_tournois').select('*')
+			const query = supabase.from('tournois').select('*')
 
 			if (categorie === 'senior') query.eq('Senior', 1)
 			else if (categorie === 'junior') query.eq('Junior', 1)
