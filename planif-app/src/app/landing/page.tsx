@@ -42,26 +42,25 @@ return (
 		className="text-center max-w-3xl mb-20"
 	>
 		<h1 className="text-5xl font-bold mb-6">
-			<span className="text-[#170647]">Bienvenue sur </span><span className="text-[#A48AFF]">SmashUp</span>
+			🎾<span className="text-[#170647]">Bienvenue sur </span><span className="text-[#A48AFF]">SmashUp</span>
 		</h1>
 		<p className="text-lg text-[#170647]/80 mb-10 leading-relaxed">
-		L’application qui te permet de planifier, suivre et analyser ta saison de tournois de tennis,
-		du premier match local jusqu’aux tournois internationaux.
+			Gérez vos programmations de tournois facilement, avec un outil pensé pour les joueurs et clubs.
 		</p>
 
 		<div className="flex justify-center space-x-6">
-		<Link
-			href="/signup"
-			className="bg-[#170647]/80 text-white hover:bg-[#170647]/60 px-8 py-3 rounded-xl font-semibold shadow-md transition"
-		>
-			S’inscrire
-		</Link>
-		<Link
-			href="/login"
-			className="border border-[#A48AFF] hover:bg-[#A48AFF]/20 px-8 py-3 rounded-xl font-semibold text-[#170647] transition"
-		>
-			Se connecter
-		</Link>
+			<Link
+				href="/signup"
+				className="bg-[#170647]/90 text-white hover:bg-[#170647] px-8 py-3 rounded-xl font-semibold shadow-md transition"
+			>
+				S’inscrire
+			</Link>
+			<Link
+				href="/login"
+				className="border border-[#A48AFF] hover:bg-[#A48AFF]/40 px-8 py-3 rounded-xl font-semibold text-[#170647] transition"
+			>
+				Se connecter
+			</Link>
 		</div>
 	</motion.section>
 
@@ -73,17 +72,17 @@ return (
 		className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10 max-w-5xl"
 	>
 		{features.map((feature, index) => (
-		<motion.div
-			key={index}
-			whileHover={{ scale: 1.05 }}
-			className="bg-[#170647]/80 hover:bg-[#170647]/60 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-lg transition"
-		>
-			<div className="flex items-center mb-4">
-			{feature.icon}
-			<h3 className="text-2xl font-semibold ml-3">{feature.title}</h3>
-			</div>
-			<p className="text-white/80">{feature.description}</p>
-		</motion.div>
+			<motion.div
+				key={index}
+				whileHover={{ scale: 1.05 }}
+				className="bg-[#170647]/90 hover:bg-[#170647] backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-lg transition"
+			>
+				<div className="flex items-center mb-4">
+				{feature.icon}
+				<h3 className="text-2xl font-semibold ml-3">{feature.title}</h3>
+				</div>
+				<p className="text-white/80">{feature.description}</p>
+			</motion.div>
 		))}
 	</motion.section>
 

@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from 'next/link'
-import Header from '../components/Header'
 
-export default function LandingPage() {
+export default function LoginPage() {
 const supabase = createClientComponentClient();
 const [email, setEmail] = useState('')
 const [password, setPassword] = useState('')
@@ -37,7 +36,7 @@ const handleLogin = async () => {
 	const { data: profile, error: profileError } = await supabase
 	.from('profiles')
 	.select('*')
-	.eq('id', userId)
+	.eq('iduser', userId)
 	.single();
 
 	if (profileError || !profile) {
@@ -64,7 +63,7 @@ const handleLogin = async () => {
 
 return (	
 	<main className="flex flex-col items-center justify-center bg-gray-100 p-6">
-		<h1 className="text-4xl font-bold mb-6 text-center">🎾 Bienvenue sur SmashUp</h1>
+		<h1 className="text-4xl font-bold mb-6 text-center"> Bienvenue sur SmashUp</h1>
 		<p className="mb-8 text-gray-600 text-center max-w-md">
 			Gérez vos programmations de tournois FFT facilement, avec un outil pensé pour les joueurs et clubs.
 		</p>
