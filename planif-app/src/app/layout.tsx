@@ -26,7 +26,7 @@ return (
 	<html lang="fr">
 		<body className="bg-gray-50 text-gray-900">
 			<HeaderClient />
-			<main className="p-6">{children}</main>
+			<main>{children}</main>
 		</body>
 	</html>
 );
