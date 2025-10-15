@@ -2,7 +2,7 @@
 
 import MainLayout from '@/app/components/MainLayout';
 import { Button } from "@/components/ui/button";
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/app/lib/supabase';
 import Link from "next/link";
 import { useEffect, useState } from 'react';
 import { ExternalLink } from "lucide-react";

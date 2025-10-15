@@ -1,114 +1,122 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useState } from 'react';
+import Header from '../components/Header';
+import Link from 'next/link';
+import { supabase } from '@/app/lib/supabase';
+import { useSearchParams } from 'next/navigation';
 
-export default function SignupPage() {
-  const supabase = createClientComponentClient();
-  const router = useRouter();
+export default function SignupForm() {
 
-  const [form, setForm] = useState({ firstname: "", lastname: "", email: "", password: "" });
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const emailFromURL = searchParams.get('email') || '';
+  const [email, setEmail] = useState(emailFromURL);
 
-  // 🔁 Vérifie si l'utilisateur est déjà connecté
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        router.replace("/home");
-      } else {
-        setLoading(false);
-      }
-    };
-    checkSession();
-  }, [router, supabase]);
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
-  if (loading) {
-    return (
-      <main className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-gray-500">Chargement...</p>
-      </main>
-    );
-  }
-
-  // 🧩 Création du compte
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const { error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: {
-          firstname: form.firstname,
-          lastname: form.lastname,
-        },
-      },
+  // Regarder si l'email est déjà associé à un compte
+  const checkUserExists = async (email: string) => {
+    const res = await fetch('/api/check-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
     });
+    const data = await res.json();
+    return data.exists;
+  };
+  
+  // Fonction interne pour l'inscription dans supabase
+  const handleSignup = async () => {
+    setLoading(true);
+    setMessage(null);
+  
+    try {
+      // On vérifie si l'adresse mail n'existe pas déjà
+      const exists = await checkUserExists(email);
+  
+      if (exists) {
+        setMessage("Un compte existe déjà avec cette adresse email. Veuillez vous connecter.");
+        setLoading(false);
+        return;
+      }
+      
+      // Enregistre l'adresse mail saisie
+      localStorage.setItem("pendingEmail", email);
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/login` }
+      });
+  
+      if (error) {
+        setMessage(`Erreur lors de la création du compte : ${error.message}`);
+      } else {
+        setMessage("Compte créé. Vérifiez votre email pour confirmer.");
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("Erreur inattendue.");
+    } finally {
+      setLoading(false);
+    }
+  };  
 
-    if (error) setError(error.message);
-    else router.push("/home");
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleSignup();
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Créer un compte</h2>
+    <div>
+   
+      <main className="max-w-sm mx-auto space-y-4">
+        <h1 className="text-2xl font-bold mb-6">Créer un compte</h1>
 
-        <form onSubmit={handleSignup}>
-          <input
-            type="text"
-            placeholder="Prénom"
-            className="w-full p-2 border rounded mb-3"
-            value={form.firstname}
-            onChange={(e) => setForm({ ...form, firstname: e.target.value })}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Nom"
-            className="w-full p-2 border rounded mb-3"
-            value={form.lastname}
-            onChange={(e) => setForm({ ...form, lastname: e.target.value })}
-            required
-          />
+        <form onSubmit={onSubmit} className="space-y-4">
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-2 border rounded mb-3"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full border rounded p-2"
           />
+
           <input
             type="password"
             placeholder="Mot de passe"
-            className="w-full p-2 border rounded mb-4"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
+            className="w-full border rounded p-2"
           />
-
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+            disabled={loading}
+            className="bg-[#170647] text-white w-full px-4 py-2 rounded cursor-pointer"
           >
-            S’inscrire
+            {loading ? 'Création...' : 'Créer le compte'}
           </button>
         </form>
 
-        <p className="mt-4 text-gray-600 text-center">
+        {message && (
+          <p className={`mt-4 text-center ${message.startsWith('Erreur') || message.startsWith('Un compte') ? 'text-red-600' : 'text-green-600'}`}>
+            {message}
+          </p>
+        )}
+
+        <p className="text-sm text-center mt-6">
           Déjà un compte ?{" "}
-          <button onClick={() => router.push("/landing")} className="text-blue-600 underline">
-            Se connecter
-          </button>
+          <Link href="/login" className="text-blue-600 hover:underline">
+            Connexion
+          </Link>
         </p>
-      </div>
-    </main>
+
+      </main>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 // src/app/services/tournois.ts
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/app/lib/supabase'
 
 export async function getTournois() {
     const { data, error } = await supabase
