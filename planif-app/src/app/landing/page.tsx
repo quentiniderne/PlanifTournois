@@ -1,120 +1,96 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import Link from 'next/link'
-import Header from '../components/Header'
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { CalendarDays, BarChart3, Users, Trophy } from "lucide-react";
 
 export default function LandingPage() {
-const supabase = createClientComponentClient();
-const [email, setEmail] = useState('')
-const [password, setPassword] = useState('')
-const [message, setMessage] = useState<string | null>(null);
-const router = useRouter()
+  const features = [
+    {
+      title: "Programmation intelligente",
+      description:
+        "Planifie automatiquement tes tournois FFT et ITF selon ton niveau, tes disponibilités et tes objectifs de progression.",
+      icon: <CalendarDays className="w-10 h-10 text-[#A48AFF]" />,
+    },
+    {
+      title: "Analyse de performance",
+      description:
+        "Suis ton ratio victoires/défaites, tes surfaces préférées et visualise ta progression en temps réel.",
+      icon: <BarChart3 className="w-10 h-10 text-[#A48AFF]" />,
+    },
+    {
+      title: "Communauté de joueurs",
+      description:
+        "Connecte-toi avec d’autres compétiteurs, partage tes résultats et découvre les parcours des joueurs autour de toi.",
+      icon: <Users className="w-10 h-10 text-[#A48AFF]" />,
+    },
+    {
+      title: "Objectifs et saison",
+      description:
+        "Définis ta saison, fixe tes objectifs et laisse SmashUp t’aider à les atteindre tournoi après tournoi.",
+      icon: <Trophy className="w-10 h-10 text-[#A48AFF]" />,
+    },
+  ];
 
-useEffect(() => {
-	const email = localStorage.getItem("pendingEmail");
-	if (email) {
-	setEmail(email);
-	localStorage.removeItem("pendingEmail"); // Optionnel
-	}
-}, []);
+  return (
+    <main className="min-h-screen w-full bg-[#170647] text-white flex flex-col items-center px-6 py-16 overflow-x-hidden">
+      {/* Hero Section */}
+      <motion.section
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-center max-w-3xl mb-20"
+      >
+        <h1 className="text-5xl font-bold mb-6">
+          Bienvenue sur <span className="text-[#A48AFF]">SmashUp</span>
+        </h1>
+        <p className="text-lg text-white/80 mb-10 leading-relaxed">
+          L’application qui te permet de planifier, suivre et analyser ta saison de tournois de tennis,
+          du premier match local jusqu’aux tournois internationaux.
+        </p>
 
+        <div className="flex justify-center space-x-6">
+          <Link
+            href="/signup"
+            className="bg-[#A48AFF] hover:bg-[#8D74FF] text-white px-8 py-3 rounded-xl font-semibold shadow-md transition"
+          >
+            S’inscrire
+          </Link>
+          <Link
+            href="/login"
+            className="border border-[#A48AFF] hover:bg-[#A48AFF]/20 px-8 py-3 rounded-xl font-semibold text-white transition"
+          >
+            Se connecter
+          </Link>
+        </div>
+      </motion.section>
 
-const handleLogin = async () => {
-	const { data: loginData, error } = await supabase.auth.signInWithPassword({ email, password });
+      {/* Features Section */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10 max-w-5xl"
+      >
+        {features.map((feature, index) => (
+          <motion.div
+            key={index}
+            whileHover={{ scale: 1.05 }}
+            className="bg-white/5 hover:bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-lg transition"
+          >
+            <div className="flex items-center mb-4">
+              {feature.icon}
+              <h3 className="text-2xl font-semibold ml-3">{feature.title}</h3>
+            </div>
+            <p className="text-white/80">{feature.description}</p>
+          </motion.div>
+        ))}
+      </motion.section>
 
-
-	if (error || !loginData.user) {
-	setMessage('Connexion échouée : ' + error?.message);
-	return;
-	}
-
-	const userId = loginData.user.id;
-
-	// Vérifier si un profil existe dans la table profiles
-	const { data: profile, error: profileError } = await supabase
-	.from('profiles')
-	.select('*')
-	.eq('id', userId)
-	.single();
-
-	if (profileError || !profile) {
-	// Si ce n'est pas le cas, on dirige vers la page de complétion du profil
-	router.push('/completeProfile');
-	} else {
-	//  Vérifier si la démo a expiré
-	if (profile.is_demo && profile.demo_started_at) {
-		const now = new Date();
-
-		if (now > profile.demo_expires_at) {
-		// Mettre à jour is_demo = false
-		await supabase
-			.from('profiles')
-			.update({ is_demo: false })
-			.eq('id', userId);
-	}
+      {/* Footer */}
+      <footer className="mt-20 text-center text-white/50 text-sm">
+        © {new Date().getFullYear()} SmashUp — Tous droits réservés.
+      </footer>
+    </main>
+  );
 }
-	// Sinon, on dirige vers le dashboard de l'utilisateur
-	router.push('/dashboard');
-	}
-
-};
-
-return (	
-	<main className="flex flex-col items-center justify-center bg-gray-100 p-6">
-		<h1 className="text-4xl font-bold mb-6 text-center">🎾 Bienvenue sur SmashUp</h1>
-		<p className="mb-8 text-gray-600 text-center max-w-md">
-			Gérez vos programmations de tournois FFT facilement, avec un outil pensé pour les joueurs et clubs.
-		</p>
-
-		{/* Formulaire de connexion */}
-		<div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-sm">
-			<h1 className="text-2xl flex justify-center font-bold">Connexion</h1>
-			<input
-				className="w-full p-2 border my-2 rounded"
-				placeholder="Email"
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
-			/>
-			<input
-				className="w-full p-2 mb-2 border rounded"
-				type="password"
-				placeholder="Mot de passe"
-				onChange={(e) => setPassword(e.target.value)}
-			/>
-			<div className='flex justify-between'>
-				{/*Bouton de connexion */}
-				<button
-					onClick={handleLogin}
-					className="bg-[#170647] text-white w-full px-4 py-2 rounded cursor-pointer"
-				>
-					Se connecter
-				</button>
-
-				{/* Réinitialisation du mot de passe */}
-				{/* Désactivé pour le moment
-				<Link
-					href='/forgotPassword'
-				>
-					<p className="text-sm text-blue-600 hover:underline">
-					Mot de passe oublié ?
-					</p>
-				</Link>*/}
-			</div>
-
-			{/* Message d'erreur s'il y en a un */}
-			{message && <p className="mt-1 text-center text-red-600">{message}</p>}
-
-			<p className="text-sm text-center mt-6">
-				Vous n’avez pas de compte ?{" "}
-				<Link href="/signup" className="text-blue-600 hover:underline">
-					Créer un compte
-				</Link>
-			</p>
-		</div>
-	</main>
-);
-}
-
