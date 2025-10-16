@@ -24,7 +24,8 @@ const isProfileActive = pathname === "/profil";
 // On voit si sur landing ou signup pour cacher la navbar
 const isAuth =
 	pathname === "/landing" ||
-	pathname === "/signup";
+	pathname === "/signup" ||
+	pathname === "/login";
 
 return (
 	<header className="flex justify-between bg-[#170647] items-center border-b border-white/20">
