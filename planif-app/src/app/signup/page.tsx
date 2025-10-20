@@ -34,7 +34,11 @@ const handleSignup = async (e: React.FormEvent) => {
 
 return (
 	<div>
-		<main className="max-w-sm py-4 mx-auto space-y-4">
+		<main className="flex flex-col items-center justify-center p-6">
+			<h1 className="text-4xl font-bold mb-6 text-center">Bienvenue sur SmashUp</h1>
+			<p className="mb-8 text-gray-600 text-center max-w-md">
+				Gérez vos programmations de tournois facilement, avec un outil pensé pour les joueurs et clubs.
+			</p>
 			<div className="bg-[#170647]/10 p-6 rounded-2xl border-solid shadow-xl w-full max-w-sm">
 				<h1 className="text-2xl flex justify-center font-bold mb-6">Créer un compte</h1>
 
