@@ -25,7 +25,7 @@ const pathname = usePathname();
 return (
 	<html lang="fr">
 		<body className="bg-gray-50 text-gray-900">
-			<HeaderClient />
+			{/* <HeaderClient /> */}
 			<main>{children}</main>
 		</body>
 	</html>

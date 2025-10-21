@@ -139,7 +139,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     }
 
     const now = new Date();
-    const findemoDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const demofinDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     // prepare payload
     const payload: any = {
@@ -158,13 +158,13 @@ const handleSubmit = async (e: React.FormEvent) => {
         datmaj: now.toISOString(),
         annule: 0,
         demo: 1,
-        findemo: findemoDate.toISOString(),
+        demofin: demofinDate.toISOString(),
     };
 
     // upsert (onConflict iduser) so it updates if row already exists
     const { error } = await supabase
         .from("profiles")
-        .upsert(payload, { onConflict: "iduser", returning: "representation" });
+        .upsert(payload, { onConflict: "iduser"});
 
     if (error) {
         console.error("Supabase error:", error);
@@ -275,15 +275,15 @@ return (
                 setSexe(e.target.value);
                 // keep classementFr if still valid; else reset
                 if (e.target.value === "Homme") {
-                if (![...baseClassements, ...hommeExtras].includes(classementFr)) {
+                if (![...classementOptions, ...hommeExtras].includes(classementFr)) {
                     setClassementFr("");
                 }
                 } else if (e.target.value === "Femme") {
-                if (![...baseClassements, ...femmeExtras].includes(classementFr)) {
+                if (![...classementOptions, ...femmeExtras].includes(classementFr)) {
                     setClassementFr("");
                 }
                 } else {
-                if (!baseClassements.includes(classementFr)) setClassementFr("");
+                if (!classementOptions.includes(classementFr)) setClassementFr("");
                 }
             }}
             className="w-full border rounded-lg p-2"
@@ -303,7 +303,7 @@ return (
             className="w-full border rounded-lg p-2"
             >
             <option value="">-- Sélectionnez (optionnel) --</option>
-            {baseClassements.map((c) => (
+            {classementOptions.map((c) => (
                 <option key={c} value={c}>
                 {c}
                 </option>
