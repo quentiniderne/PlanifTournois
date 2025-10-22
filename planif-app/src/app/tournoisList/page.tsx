@@ -1,162 +1,168 @@
-"use client";
+'use client'
 
-import MainLayout from '@/app/components/MainLayout';
-import { Button } from "@/components/ui/button";
-import { supabase } from '@/app/lib/supabase';
-import Link from "next/link";
-import { useEffect, useState } from 'react';
-import { ExternalLink } from "lucide-react";
+import { useState, useEffect } from 'react'
+import { supabase } from '@/app/lib/supabase'
+import { Trophy, Search, MapPin, Calendar, Euro, ExternalLink } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent} from '@/components/ui/card'
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 
-export default function Home() {
-	const [tournois, setTournois] = useState<any[]>([])
-	const [categorie, setCategorie] = useState<string>('all')
-	const [dotationMin, setDotationMin] = useState<string>('')
-	const [surface, setSurface] = useState<'all' | 'dur' | 'terre' | 'gazon'>('all')
-	const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null)
+export default function TournamentsList() {
+  const [tournaments, setTournaments] = useState<any[]>([])
+  const [filtered, setFiltered] = useState<any[]>([])
+  const [search, setSearch] = useState('')
+  const [surfaceFilter, setSurfaceFilter] = useState<'all' | string>('all')
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'junior' | 'senior'>('all')
+  const [loading, setLoading] = useState(true)
 
-	useEffect(() => {
-		async function fetchData() {
-			const query = supabase.from('tournois').select('*')
+  useEffect(() => {
+    loadTournaments()
+  }, [])
 
-			if (categorie === 'senior') query.eq('Senior', 1)
-			else if (categorie === 'junior') query.eq('Junior', 1)
+  useEffect(() => {
+    filterTournaments()
+  }, [search, surfaceFilter, categoryFilter, tournaments])
 
-			if (dotationMin !== '' && !isNaN(Number(dotationMin))) {
-				query.gte('dotation', Number(dotationMin))
-			}
+  const loadTournaments = async () => {
+    const { data, error } = await supabase
+      .from('tournois')
+      .select('*')
+      .order('datdeb', { ascending: true })
+    if (error) console.error(error)
+    else setTournaments(data || [])
+    setLoading(false)
+  }
 
-			const { data, error } = await query
-			if (!error && data) setTournois(data)
-			else console.error('Erreur Supabase :', error?.message)
-		}
-		fetchData()
-	}, [categorie, dotationMin])
+  const filterTournaments = () => {
+    let temp = [...tournaments]
 
-	// --- Tri dynamique ---
-	const handleSort = (key: string) => {
-		let direction: 'asc' | 'desc' = 'asc'
-		// Si on reclique sur la même colonne, on inverse
-		if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-		direction = 'desc'
-		}
-		// 👇 Cas spécial : si on clique pour la première fois sur "dotation", on commence par desc
-		else if (!sortConfig && key === 'dotation') {
-		direction = 'desc'
-		}
-		setSortConfig({ key, direction })
-	} 
+    if (search) {
+      temp = temp.filter(t =>
+        (t.libtournoi?.toLowerCase().includes(search.toLowerCase()) || 
+         t.adresse?.toLowerCase().includes(search.toLowerCase()))
+      )
+    }
 
-	const sortedTournois = [...tournois].sort((a, b) => {
-		if (!sortConfig) return 0
-		const { key, direction } = sortConfig
-		const order = direction === 'asc' ? 1 : -1
+    if (surfaceFilter !== 'all') temp = temp.filter(t => t.surface === surfaceFilter)
+    if (categoryFilter !== 'all') temp = temp.filter(t =>
+      categoryFilter === 'junior' ? t.junior === 1 : t.senior === 1
+    )
 
-		const aVal = a[key] ?? ''
-		const bVal = b[key] ?? ''
+    setFiltered(temp)
+  }
 
-		if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * order
-		return String(aVal).localeCompare(String(bVal)) * order
-	})
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return 'N/A'
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
+  }
 
-	const renderArrow = (key: string) => {
-		if (sortConfig?.key !== key) return '↕️'
-		return sortConfig.direction === 'asc' ? '▲' : '▼'
-	}
+  const handleSchedule = async (idtournoi: number) => {
+    alert(`Planification pour tournoi ${idtournoi} !`)
+    // Ici tu peux ajouter ton endpoint Supabase pour enregistrer le tournoi
+  }
 
-	return (
-		<MainLayout>
-			<div className="flex items-center justify-between mb-4">
-				<h2 className="text-2xl font-bold">Liste des tournois</h2>
-				<Link href="/creaProg">
-					<Button className="bg-[#170647] text-white px-4 py-2 rounded-lg hover:bg-[#2a1085] transition-colors">
-						+ Créer une programmation
-					</Button>
-				</Link>
-			</div>
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Trophy className="h-12 w-12 text-[#170647] animate-pulse" />
+      </div>
+    )
+  }
 
-			<div className="mb-4 flex gap-4">
-				<input
-					type="text"
-					placeholder="Rechercher un tournoi..."
-					className="border border-gray-300 rounded px-3 py-2 w-1/3"
-				/>
-				<select className="border text-black border-gray-300 rounded px-3 py-2">
-					<option value="all">Surface</option>
-					<option value="dur">Dur</option>
-					<option value="terre">Terre</option>
-					<option value="gazon">Gazon</option>
-				</select>
-				<input
-					type="number"
-					placeholder="Dotation minimale (€)"
-					className="border border-gray-300 rounded px-3 py-2 w-1/5 text-black"
-					value={dotationMin}
-					onChange={(e) => setDotationMin(e.target.value)}
-				/>
-				<select
-					className="border text-black border-gray-300 rounded px-3 py-2"
-					value={categorie}
-					onChange={(e) => setCategorie(e.target.value as 'all' | 'senior' | 'junior')}
-				>
-					<option value="all">Catégories</option>
-					<option value="senior">Senior</option>
-					<option value="junior">Junior</option>
-				</select>
-			</div>
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Liste des tournois</h1>
 
-			<table className="w-full bg-white text-black shadow rounded-lg overflow-hidden">
-				<thead className="bg-gray-100 text-left text-sm text-black">
-					<tr>
-						<th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('libtournoi')}>
-							Nom {renderArrow('libtournoi')}
-						</th>
-						<th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('datdeb')}>
-							Date début {renderArrow('datdeb')}
-						</th>
-						<th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('datfin')}>
-							Date fin {renderArrow('datfin')}
-						</th>
-						<th className="px-4 py-2 cursor-pointer">
-							Classement
-						</th>
-						<th className="px-4 py-2 cursor-pointer">
-							Surface
-						</th>
-						<th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('dotation')}>
-							Dotation {renderArrow('dotation')}
-						</th>
-						<th className="px-4 py-2">Lien TenUp</th>
-					</tr>
-				</thead>
-				<tbody className="text-sm">
-					{sortedTournois
-						.filter((t) => {
-							if (categorie === 'senior') return t?.Senior === true
-							if (categorie === 'junior') return t?.Junior === true
-							return true
-						})
-						.map((t) => (
-							<tr key={t?.idtournoi} className="hover:bg-gray-100 border-t">
-								<td className="px-4 py-2">{t?.libtournoi}</td>
-								<td className="px-4 py-2">{t?.datdeb}</td>
-								<td className="px-4 py-2">{t?.datfin}</td>
-								<td className="px-4 py-2">{t?.classementSM}</td>
-								<td className="px-4 py-2">{t?.surface}</td>
-								<td className="px-4 py-2">{t?.dotation} €</td>
-								<td className="px-4 py-2">
-									<Link
-										href={`https://tenup.fft.fr/tournoi/${t?.idtournoi}`}
-										target="_blank"
-										className="flex items-center text-blue-500 hover:underline"
-										rel="noopener noreferrer"
-									>
-										<ExternalLink className="w-4 h-4 ml-1" />
-									</Link>
-								</td>
-							</tr>
-						))}
-				</tbody>
-			</table>
-		</MainLayout>
-	)
+      {/* Filtres */}
+      <div className="grid md:grid-cols-3 gap-4 mb-8">
+        <div>
+          <Input 
+            placeholder="Recherche nom ou ville..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <Select value={surfaceFilter} onValueChange={setSurfaceFilter}>
+          <SelectTrigger>
+            <SelectValue placeholder="Surface" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes</SelectItem>
+            <SelectItem value="Dur">Dur</SelectItem>
+            <SelectItem value="Terre battue">Terre battue</SelectItem>
+            <SelectItem value="Gazon">Gazon</SelectItem>
+            <SelectItem value="Indoor">Indoor</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger>
+            <SelectValue placeholder="Catégorie" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes</SelectItem>
+            <SelectItem value="junior">Junior</SelectItem>
+            <SelectItem value="senior">Senior</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Liste de tournois */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filtered.length === 0 ? (
+          <div className="col-span-full text-center text-gray-500">
+            Aucun tournoi trouvé
+          </div>
+        ) : (
+          filtered.map(t => (
+            <Card key={t.idtournoi} className="hover:shadow-lg transition-shadow">
+              <CardContent className="flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h2 className="text-xl font-bold">{t.libtournoi}</h2>
+                    {t.surface && <Badge>{t.surface}</Badge>}
+                  </div>
+
+                  {t.adresse && (
+                    <div className="flex items-center text-sm text-gray-600 mb-1">
+                      <MapPin className="w-4 h-4 mr-1 text-[#170647]" /> {t.adresse}
+                    </div>
+                  )}
+
+                  <div className="flex items-center text-sm text-gray-600 mb-1">
+                    <Calendar className="w-4 h-4 mr-1 text-[#170647]" /> {formatDate(t.datdeb)} - {formatDate(t.datfin)}
+                  </div>
+
+                  {t.dotation && (
+                    <div className="flex items-center text-sm text-gray-600 mb-1">
+                      <Euro className="w-4 h-4 mr-1 text-[#170647]" /> Dotation: {t.dotation} €
+                    </div>
+                  )}
+
+                  {t.classementSM && (
+                    <div className="text-xs text-gray-700">
+                      <span className="font-medium">Classement SM:</span> {t.classementSM}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4 flex flex-col gap-2">
+                  <Button className="bg-gradient-to-r from-[#170647] to-purple-600" onClick={() => handleSchedule(t.idtournoi)}>
+                    Planifier
+                  </Button>
+                  <Button variant="outline" onClick={() => window.open(`https://tenup.fft.fr/tournoi/${t.idtournoi}`, '_blank')}>
+                    <ExternalLink className="w-4 h-4 mr-2" /> TenUp
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  )
 }

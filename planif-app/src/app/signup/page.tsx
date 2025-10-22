@@ -129,7 +129,7 @@ export default function SignupPage() {
 						onClick={() => setSelectedPlan("monthly")}
 					>
 						<p className="text-gray-700 font-medium">2€/mois</p>
-						<p className="text-gray-500 text-sm">Paiement mensuel, sans engagement</p>
+						<p className="text-gray-500 text-sm">Sans engagement</p>
 					</div>
 
 					{/* Option annuelle */}

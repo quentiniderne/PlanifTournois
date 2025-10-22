@@ -121,7 +121,7 @@ return (
 	  </nav>
 
 	  {/* Hero Section */}
-		<section className="container mx-auto px-4 py-20 text-center">
+		<section className="container mx-auto px-4 py-10 text-center">
 			<div className="max-w-4xl mx-auto">
 				<h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
 					Planifiez vos tournois de tennis
@@ -144,35 +144,39 @@ return (
 					</Button>
 					</Link>
 				</div>
-				<div className="flex flex-col sm:flex-row gap-6 justify-center mt-12">
-					{/* Option mensuelle */}
-					<div
-						className="cursor-pointer p-6 sm:p-8 rounded-2xl border border-purple-200 
-								bg-gradient-to-br from-white via-purple-50 to-purple-100 
-								hover:from-purple-100 hover:via-purple-50 hover:to-white 
-								transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
-								animate-gradientMove"
-						onClick={() => handleSelectPlan("monthly")}
-					>
-						<p className="text-gray-800 font-semibold text-2xl text-center">2€/mois</p>
-						<p className="text-gray-500 text-sm text-center mt-1">
-						Paiement mensuel, sans engagement
-						</p>
-					</div>
+				<div className="max-w-4xl mx-auto">
+					<h3 className="text-xl mt-12 font-bold text-gray-900">Gagnez du temps, concentrez-vous sur le jeu</h3>
+					<div className="flex flex-col sm:flex-row gap-6 justify-center mt-4">
+						{/* Option mensuelle */}
+						<div
+							className="cursor-pointer p-6 sm:p-8 rounded-2xl border-4 border-purple-300 
+									bg-gradient-to-br from-white via-purple-50 to-purple-100 
+									hover:from-purple-100 hover:via-purple-50 hover:to-white 
+									transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
+									animate-gradientMove"
+							onClick={() => handleSelectPlan("monthly")}
+						>
+							<p className="text-gray-800 font-semibold text-2xl text-center">2€/mois</p>
+							<p className="text-gray-500 text-sm text-center mt-1">
+							Sans engagement
+							</p>
+						</div>
 
-					{/* Option annuelle */}
-					<div
-						className="cursor-pointer p-6 sm:p-8 rounded-2xl border border-purple-200 
-								bg-gradient-to-br from-white via-purple-50 to-purple-100 
-								hover:from-purple-100 hover:via-purple-50 hover:to-white 
-								transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
-								animate-gradientMove"
-						onClick={() => handleSelectPlan("yearly")}
-					>
-						<p className="text-gray-800 font-semibold text-2xl text-center">20€/an</p>
-						<p className="text-green-600 font-semibold text-sm text-center mt-1">
-						-20% par rapport au mensuel !
-						</p>
+						{/* Option annuelle */}
+						<div
+							className="cursor-pointer p-6 sm:p-8 rounded-2xl border-4 border-purple-300 
+									bg-gradient-to-br from-white via-purple-50 to-purple-100 
+									hover:from-purple-100 hover:via-purple-50 hover:to-white 
+									transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
+									animate-gradientMove"
+							onClick={() => handleSelectPlan("yearly")}
+						>
+							<p className="text-gray-800 font-semibold text-2xl text-center">20€/an</p>
+							<p className="text-green-600 font-semibold text-sm text-center mt-1">
+							-20% par rapport <br/>
+							au mensuel !
+							</p>
+						</div>
 					</div>
 				</div>
 
@@ -180,7 +184,7 @@ return (
 		</section>
 
 	  {/* Features Section */}
-	  <section className="container mx-auto px-4 py-16">
+	  <section className="container mx-auto px-4 py-5">
 		<div className="text-center mb-12">
 		  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
 			Tout ce dont vous avez besoin
@@ -264,7 +268,7 @@ return (
 		  <Link href="/signup">
 			<Button size="lg" className="bg-white text-[#170647] hover:bg-gray-100 text-lg px-8 shadow-2xl">
 			  <Sparkles className="h-5 w-5 mr-2" />
-			  Créer mon compte gratuitement
+			  Essayer gratuitement pendant 1 mois
 			</Button>
 		  </Link>
 		</div>
@@ -288,64 +292,4 @@ return (
 	</div>
   )
 
-// return (
-// 	<main className="min-h-screen w-full bg-white text-white flex flex-col items-center px-6 py-16 overflow-x-hidden">
-// 	{/* Hero Section */}
-// 	<motion.section
-// 		initial={{ opacity: 0, y: -20 }}
-// 		animate={{ opacity: 1, y: 0 }}
-// 		transition={{ duration: 0.8 }}
-// 		className="text-center max-w-3xl mb-20"
-// 	>
-// 		<h1 className="text-5xl font-bold mb-6">
-// 			🎾<span className="text-[#170647]">Bienvenue sur </span><span className="text-[#A48AFF]">SmashUp</span>
-// 		</h1>
-// 		<p className="text-lg text-[#170647]/80 mb-10 leading-relaxed">
-// 			Gérez vos programmations de tournois facilement, avec un outil pensé pour les joueurs et clubs.
-// 		</p>
-
-// 		<div className="flex justify-center space-x-6">
-// 			<Link
-// 				href="/signup"
-// 				className="bg-[#170647]/90 text-white hover:bg-[#170647] px-8 py-3 rounded-xl font-semibold shadow-md transition"
-// 			>
-// 				S’inscrire
-// 			</Link>
-// 			<Link
-// 				href="/login"
-// 				className="border border-[#A48AFF] hover:bg-[#A48AFF]/40 px-8 py-3 rounded-xl font-semibold text-[#170647] transition"
-// 			>
-// 				Se connecter
-// 			</Link>
-// 		</div>
-// 	</motion.section>
-
-// 	{/* Features Section */}
-// 	<motion.section
-// 		initial={{ opacity: 0 }}
-// 		animate={{ opacity: 1 }}
-// 		transition={{ delay: 0.5, duration: 1 }}
-// 		className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10 max-w-5xl"
-// 	>
-// 		{features.map((feature, index) => (
-// 			<motion.div
-// 				key={index}
-// 				whileHover={{ scale: 1.05 }}
-// 				className="bg-[#170647]/90 hover:bg-[#170647] backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-lg transition"
-// 			>
-// 				<div className="flex items-center mb-4">
-// 				{feature.icon}
-// 				<h3 className="text-2xl font-semibold ml-3">{feature.title}</h3>
-// 				</div>
-// 				<p className="text-white/80">{feature.description}</p>
-// 			</motion.div>
-// 		))}
-// 	</motion.section>
-
-// 	{/* Footer */}
-// 	<footer className="mt-20 text-center text-black text-sm">
-// 		© {new Date().getFullYear()} SmashUp — Tous droits réservés.
-// 	</footer>
-// 	</main>
-// );
 }
