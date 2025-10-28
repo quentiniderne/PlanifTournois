@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Profile } from '@/app/types/profile'
 import type { User } from '@supabase/supabase-js'
 import { motion } from "framer-motion";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -23,81 +24,51 @@ const router = useRouter()
 
 const supabase = createClientComponentClient()
 const [user, setUser] = useState<any>(null)
-
-const getUser = async () => {
-  	const { data: { user } } = await supabase.auth.getUser()
-  	if (user) {
-    	const { data: profile } = await supabase
-		.from('profiles')
-		.select('lastname')
-		.eq('iduser', user.id)
-		.single()
-
-		setUser({ ...user, nom: profile?.lastname || user.email })
-	}
-}
-
-
-interface Profile {
-iduser: string
-firstname: string
-lastname: string
-email?: string
-}
-
-const [profile, setProfile] = useState<Profile | null>(null)
-
-interface Stats {
-	tournamentsScheduled: number
-	totalMatches: number
-	wins: number
-	winRate: number
-}
-
-const [stats, setStats] = useState<Stats | null>(null)
-
 const [loading, setLoading] = useState(true)
+const [profile, setProfile] = useState<Profile | null>(null);
 const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+const [profileLoading, setProfileLoading] = useState(true); // loading flag
+
+// Récupération des données de l'utilisateur
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!user) return  // ne fait rien si pas de user
+      
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq('iduser', user?.id)
+        .maybeSingle();
+      if (!error && data) {
+        setProfile(data);
+      } else {
+        console.error("Erreur lors de la récupération du profil de l'utilisateur:", error);
+      }
+
+      setProfileLoading(false); // fin du chargement
+    };
+    
+    fetchUser();
+
+  }, [user]);
 
 useEffect(() => {
-	checkAuth()
-	loadStats()
-}, [])
-
-const checkAuth = async () => {
-	const { data: { user } } = await supabase.auth.getUser()
-	
-	if (!user) {
-	router.push('/login')
-	return
-	}
-
-	setUser(user)
-
-	// Load profile
-	const { data: profileData } = await supabase
-	.from('profiles')
-	.select('*')
-	.eq('iduser', user.id)
-	.single()
-
-	setProfile(profileData)
-	setLoading(false)
-}
-
-const loadStats = async () => {
-	try {
-	const response = await fetch('/api/stats', {
-		headers: {
-		'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+	const loadStats = async () => {
+		try {
+		const response = await fetch('/api/stats', {
+			headers: {
+			'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+			}
+		})
+		const data = await response.json()
+		setStats(data)
+		} catch (error) {
+		console.error('Error loading stats:', error)
 		}
-	})
-	const data = await response.json()
-	setStats(data)
-	} catch (error) {
-	console.error('Error loading stats:', error)
-	}
-}
+	};
+	loadStats()
+}, [user])
+
 
 const handleLogout = async () => {
 	await supabase.auth.signOut()
