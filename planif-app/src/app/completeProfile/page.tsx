@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/app/lib/supabase";
+import { supabase } from "@/app/lib/supabase/supabase";
 import { BASE_CLASSEMENTS, HOMME_EXTRAS, FEMME_EXTRAS } from "@/app/lib/classements";
 import { COUNTRIES } from "@/app/lib/countries";
 
@@ -175,7 +175,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     setMessage("Profil enregistré. Redirection…");
     // small delay for UX
-    setTimeout(() => router.push("/home"), 700);
+    setTimeout(() => router.push("/dashboard"), 700);
     } catch (err: any) {
     console.error(err);
     setMessage("Erreur inattendue.");
@@ -353,7 +353,7 @@ return (
         </div>
 
         {message && (
-            <p className={`text-center ${message.includes("succès") ? "text-green-600" : "text-red-600"}`}>
+            <p className={`text-center ${message.includes("enregistré") ? "text-green-600" : "text-red-600"}`}>
             {message}
             </p>
         )}

@@ -5,7 +5,7 @@
 import { CalendarDays, BarChart3, Users, Trophy } from "lucide-react";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase/supabase';
 import type { User } from '@supabase/supabase-js'
 import { Calendar, MapPin, TrendingUp, LogIn, UserPlus, Menu, X, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -144,42 +144,6 @@ return (
 					</Button>
 					</Link>
 				</div>
-				<div className="max-w-4xl mx-auto">
-					<h3 className="text-xl mt-12 font-bold text-gray-900">Gagnez du temps, concentrez-vous sur le jeu</h3>
-					<div className="flex flex-col sm:flex-row gap-6 justify-center mt-4">
-						{/* Option mensuelle */}
-						<div
-							className="cursor-pointer p-6 sm:p-8 rounded-2xl border-4 border-purple-300 
-									bg-gradient-to-br from-white via-purple-50 to-purple-100 
-									hover:from-purple-100 hover:via-purple-50 hover:to-white 
-									transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
-									animate-gradientMove"
-							onClick={() => handleSelectPlan("monthly")}
-						>
-							<p className="text-gray-800 font-semibold text-2xl text-center">2€/mois</p>
-							<p className="text-gray-500 text-sm text-center mt-1">
-							Sans engagement
-							</p>
-						</div>
-
-						{/* Option annuelle */}
-						<div
-							className="cursor-pointer p-6 sm:p-8 rounded-2xl border-4 border-purple-300 
-									bg-gradient-to-br from-white via-purple-50 to-purple-100 
-									hover:from-purple-100 hover:via-purple-50 hover:to-white 
-									transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
-									animate-gradientMove"
-							onClick={() => handleSelectPlan("yearly")}
-						>
-							<p className="text-gray-800 font-semibold text-2xl text-center">20€/an</p>
-							<p className="text-green-600 font-semibold text-sm text-center mt-1">
-							-20% par rapport <br/>
-							au mensuel !
-							</p>
-						</div>
-					</div>
-				</div>
-
 			</div>
 		</section>
 
@@ -194,7 +158,7 @@ return (
 		  </p>
 		</div>
 
-		<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-10 px-8 max-w-5xl mx-auto mt-12">
 		  <Card className="border-2 hover:border-[#170647] hover:shadow-xl transition-all duration-300 group">
 			<CardHeader>
 			  <div className="w-14 h-14 bg-gradient-to-br from-[#170647] to-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -250,6 +214,41 @@ return (
 			  </CardDescription>
 			</CardContent>
 		  </Card>
+		</div>
+		<div className="max-w-4xl mx-auto text-center">
+			<h3 className="text-xl mt-12 font-bold text-gray-900">Gagnez du temps, concentrez-vous sur le jeu</h3>
+			<div className="flex flex-col sm:flex-row gap-6 justify-center mt-4">
+				{/* Option mensuelle */}
+				<div
+					className="cursor-pointer p-6 sm:p-8 rounded-2xl border-4 border-purple-300 
+							bg-gradient-to-br from-white via-purple-50 to-purple-100 
+							hover:from-purple-100 hover:via-purple-50 hover:to-white 
+							transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
+							animate-gradientMove"
+					onClick={() => handleSelectPlan("monthly")}
+				>
+					<p className="text-gray-800 font-semibold text-2xl text-center">2€/mois</p>
+					<p className="text-gray-500 text-sm text-center mt-1">
+					Sans engagement
+					</p>
+				</div>
+
+				{/* Option annuelle */}
+				<div
+					className="cursor-pointer p-6 sm:p-8 rounded-2xl border-4 border-purple-300 
+							bg-gradient-to-br from-white via-purple-50 to-purple-100 
+							hover:from-purple-100 hover:via-purple-50 hover:to-white 
+							transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]
+							animate-gradientMove"
+					onClick={() => handleSelectPlan("yearly")}
+				>
+					<p className="text-gray-800 font-semibold text-2xl text-center">20€/an</p>
+					<p className="text-green-600 font-semibold text-sm text-center mt-1">
+					-20% par rapport <br/>
+					au mensuel !
+					</p>
+				</div>
+			</div>
 		</div>
 	  </section>
 

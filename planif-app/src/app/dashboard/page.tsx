@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/app/lib/supabase'
+import { supabase } from '@/app/lib/supabase/supabase'
 import { Trophy, Calendar, CalendarDays, TrendingUp, MapPin, User as UserIcon, LogOut, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import { motion } from "framer-motion";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function DashboardPage() {
 const COLORS = {
@@ -19,7 +20,24 @@ background: "bg-gradient-to-br from-purple-50 via-white to-pink-50"
 };
 
 const router = useRouter()	
-const [user, setUser] = useState<User | null>(null)
+
+const supabase = createClientComponentClient()
+const [user, setUser] = useState<any>(null)
+
+const getUser = async () => {
+  	const { data: { user } } = await supabase.auth.getUser()
+  	if (user) {
+    	const { data: profile } = await supabase
+		.from('profiles')
+		.select('lastname')
+		.eq('iduser', user.id)
+		.single()
+
+		setUser({ ...user, nom: profile?.lastname || user.email })
+	}
+}
+
+
 interface Profile {
 iduser: string
 firstname: string
@@ -105,6 +123,8 @@ return (
 					<h1 className="text-4xl font-bold bg-gradient-to-r from-[#170647] via-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
 						Tableau de bord
 					</h1>
+					<h2 className="text-lg font-semibold mb-2">Bonjour {user.nom}</h2>
+
 
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 						<motion.div whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 200 }}>

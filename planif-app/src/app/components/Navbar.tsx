@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { supabase } from '@/app/lib/supabase/supabase'
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Trophy, User, LogOut, Menu, X } from "lucide-react";
@@ -17,8 +18,8 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     // si tu utilises Supabase :
-    // await supabase.auth.signOut();
-    router.push("/login");
+    await supabase.auth.signOut();
+    router.push("/landing");
   };
 
   return (

@@ -1,38 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/app/lib/supabase";
+import { supabase } from "@/app/lib/supabase/supabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Trophy, Sparkles, LogIn } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from 'react'
+
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      setMessage("Erreur de connexion : " + error.message);
-    } else if (data.user) {
-      router.push("/dashboard");
-    }
+      setError(error.message);
+    } else {
+      // Récupère l'utilisateur connecté
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Vérifie si le profil existe et est complet
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('firstname, lastname')
+          .eq('iduser', user.id)
+          .single();
 
-    setLoading(false);
+        if (profileError && profileError.code !== 'PGRST116') {
+          // Erreur inattendue (pas "not found")
+          setError("Erreur lors de la vérification du profil.");
+          return;
+        }
+
+        // Redirige en fonction du profil
+        if (!profile || !profile.firstname || !profile.lastname) {
+          router.push('/completeProfile');
+        } else {
+          router.push('/dashboard');
+        }
+      }
+    }
   };
 
   return (
@@ -88,21 +105,20 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 text-lg font-medium text-white shadow-lg shadow-purple-500/30 bg-gradient-to-r from-[#170647] to-purple-600 hover:opacity-90"
+            <button
+              onClick={handleLogin}
+              className="bg-gradient-to-r h-10 from-[#170647] to-purple-600 hover:opacity-90 shadow-lg shadow-purple-500/30 w-full text-white cursor-pointer"
             >
-              {loading ? "Connexion en cours..." : "Se connecter"}
-            </Button>
+              Se connecter
+            </button>
 
-            {message && (
+            {error && (
               <p
                 className={`text-center text-sm mt-2 ${
-                  message.includes("Erreur") ? "text-red-500" : "text-green-600"
+                  error.includes("Erreur") ? "text-red-500" : "text-green-600"
                 }`}
               >
-                {message}
+                {error}
               </p>
             )}
 
