@@ -107,58 +107,6 @@ if (profileLoading) {
 
 return (
 	<div className="min-h-screen bg-gray-50">
-		
-			<main>
-				<div className={`min-h-screen ${COLORS.background} p-8`}>
-					<h1 className="text-4xl font-bold bg-gradient-to-r from-[#170647] via-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
-						Tableau de bord
-					</h1>
-					<h2 className="text-lg font-semibold mb-2">Bonjour {profile?.firstname}</h2>
-
-
-					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-						<motion.div whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 200 }}>
-							<Card className="border-2 hover:border-[#170647] hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 bg-white/70 backdrop-blur-xl">
-							<CardHeader>
-								<div className="w-12 h-12 bg-gradient-to-br from-[#170647] to-purple-600 rounded-xl flex items-center justify-center mb-3">
-								<CalendarDays className="h-6 w-6 text-white" />
-								</div>
-								<CardTitle>Prochain tournoi</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<CardDescription>Découvrez les tournois à venir selon votre niveau.</CardDescription>
-							</CardContent>
-							</Card>
-						</motion.div>
-
-
-						<Card className="border-2 hover:border-pink-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
-						<CardHeader>
-							<div className="w-12 h-12 bg-gradient-to-br from-pink-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
-							<Trophy className="h-6 w-6 text-white" />
-							</div>
-							<CardTitle>Résultats récents</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<CardDescription>Analysez vos derniers matchs et performances.</CardDescription>
-						</CardContent>
-						</Card>
-
-						<Card className="border-2 hover:border-indigo-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
-						<CardHeader>
-							<div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
-							<TrendingUp className="h-6 w-6 text-white" />
-							</div>
-							<CardTitle>Progression</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<CardDescription>Suivez votre évolution de classement et vos objectifs.</CardDescription>
-						</CardContent>
-						</Card>
-					</div>
-				</div>
-			</main>
-
 		{/* Main Content */}
 		<main className="container mx-auto px-4 py-8">
 			{/* Welcome Section */}
@@ -173,68 +121,96 @@ return (
 
 				{/* Stats Cards */}
 				<div className="grid md:grid-cols-4 gap-6 mb-8">
-			{/* <Card>
-				<CardHeader className="flex flex-row items-center justify-between pb-2">
-				<CardTitle className="text-sm font-medium text-gray-600">
-					Tournois planifiés
-				</CardTitle>
-				<Calendar className="h-4 w-4 text-[#170647]" />
-				</CardHeader>
-				<CardContent>
-				<div className="text-2xl font-bold">{stats?.tournamentsScheduled || 0}</div>
-				</CardContent>
-			</Card>
+				{/* <Card>
+					<CardHeader className="flex flex-row items-center justify-between pb-2">
+					<CardTitle className="text-sm font-medium text-gray-600">
+						Tournois planifiés
+					</CardTitle>
+					<Calendar className="h-4 w-4 text-[#170647]" />
+					</CardHeader>
+					<CardContent>
+					<div className="text-2xl font-bold">{stats?.tournamentsScheduled || 0}</div>
+					</CardContent>
+				</Card>
 
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between pb-2">
-				<CardTitle className="text-sm font-medium text-gray-600">
-					Matches joués
-				</CardTitle>
-				<Trophy className="h-4 w-4 text-[#170647]" />
-				</CardHeader>
-				<CardContent>
-				<div className="text-2xl font-bold">{stats?.totalMatches || 0}</div>
-				</CardContent>
-			</Card>
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between pb-2">
+					<CardTitle className="text-sm font-medium text-gray-600">
+						Matches joués
+					</CardTitle>
+					<Trophy className="h-4 w-4 text-[#170647]" />
+					</CardHeader>
+					<CardContent>
+					<div className="text-2xl font-bold">{stats?.totalMatches || 0}</div>
+					</CardContent>
+				</Card>
 
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between pb-2">
-				<CardTitle className="text-sm font-medium text-gray-600">
-					Victoires
-				</CardTitle>
-				<TrendingUp className="h-4 w-4 text-[#170647]" />
-				</CardHeader>
-				<CardContent>
-				<div className="text-2xl font-bold">{stats?.wins || 0}</div>
-				</CardContent>
-			</Card>
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between pb-2">
+					<CardTitle className="text-sm font-medium text-gray-600">
+						Victoires
+					</CardTitle>
+					<TrendingUp className="h-4 w-4 text-[#170647]" />
+					</CardHeader>
+					<CardContent>
+					<div className="text-2xl font-bold">{stats?.wins || 0}</div>
+					</CardContent>
+				</Card>
 
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between pb-2">
-				<CardTitle className="text-sm font-medium text-gray-600">
-					Taux de victoire
-				</CardTitle>
-				<TrendingUp className="h-4 w-4 text-[#170647]" />
-				</CardHeader>
-				<CardContent>
-				<div className="text-2xl font-bold">{stats?.winRate || 0}%</div>
-				</CardContent>
-			</Card> */}
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between pb-2">
+					<CardTitle className="text-sm font-medium text-gray-600">
+						Taux de victoire
+					</CardTitle>
+					<TrendingUp className="h-4 w-4 text-[#170647]" />
+					</CardHeader>
+					<CardContent>
+					<div className="text-2xl font-bold">{stats?.winRate || 0}%</div>
+					</CardContent>
+				</Card> */}
 			</div>
 
 			{/* Quick Actions */}
 			<div className="grid md:grid-cols-3 gap-6">
-				<Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/tournaments')}>
+				<motion.div whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 200 }}>
+					<Card className="border-2 hover:border-[#170647] hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 bg-white/70 backdrop-blur-xl">
 					<CardHeader>
-						<Trophy className="h-12 w-12 text-[#170647] mb-2" />
-						<CardTitle>Explorer les tournois</CardTitle>
-						<CardDescription>
-							Découvrez tous les tournois disponibles
-						</CardDescription>
+						<div className="w-12 h-12 bg-gradient-to-br from-[#170647] to-purple-600 rounded-xl flex items-center justify-center mb-3">
+						<CalendarDays className="h-6 w-6 text-white" />
+						</div>
+						<CardTitle>Prochain tournoi</CardTitle>
 					</CardHeader>
+					<CardContent>
+						<CardDescription>Découvrez les tournois à venir selon votre niveau.</CardDescription>
+					</CardContent>
+					</Card>
+				</motion.div>
+
+				<Card className="border-2 hover:border-pink-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
+					<CardHeader>
+						<div className="w-12 h-12 bg-gradient-to-br from-pink-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
+						<Trophy className="h-6 w-6 text-white" />
+						</div>
+						<CardTitle>Résultats récents</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<CardDescription>Analysez vos derniers matchs et performances.</CardDescription>
+					</CardContent>
 				</Card>
 
-				<Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/scheduling')}>
+				<Card className="border-2 hover:border-indigo-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
+					<CardHeader>
+						<div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
+						<TrendingUp className="h-6 w-6 text-white" />
+						</div>
+						<CardTitle>Progression</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<CardDescription>Suivez votre évolution de classement et vos objectifs.</CardDescription>
+					</CardContent>
+				</Card>
+
+				{/* <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/scheduling')}>
 					<CardHeader>
 						<Calendar className="h-12 w-12 text-[#170647] mb-2" />
 						<CardTitle>Planification intelligente</CardTitle>
@@ -252,7 +228,7 @@ return (
 							Suivez vos statistiques et progressez
 						</CardDescription>
 					</CardHeader>
-				</Card>
+				</Card> */}
 			</div>
 		</main>
 	</div>
