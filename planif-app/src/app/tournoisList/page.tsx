@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/app/lib/supabase/supabase'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useSupabase } from "../providers";
 import { Trophy, MapPin, Calendar, Euro, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,14 +9,23 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 
-export default function TournamentsList() {
+export default function TournamentsList({ allTournois }: { allTournois: any[] }) {
+const {supabase} = useSupabase()
 const [tournaments, setTournaments] = useState<any[]>([])
+const [displayedTournois, setDisplayedTournois] = useState<any[]>([])
 const [filtered, setFiltered] = useState<any[]>([])
+const [visibleCount, setVisibleCount] = useState(50)
 const [search, setSearch] = useState('')
 const [surfaceFilter, setSurfaceFilter] = useState<'all' | string>('all')
 const [categoryFilter, setCategoryFilter] = useState<'all' | 'junior' | 'senior'>('all')
 const [orderFilter, setOrderFilter] = useState<'all' | 'prize' | 'datedeb' | 'datfin'>('all')
 const [loading, setLoading] = useState(true)
+const loaderRef = useRef<HTMLDivElement | null>(null)
+
+  // Charger les 50 premières lignes
+  useEffect(() => {
+    setDisplayedTournois(allTournois.slice(0, visibleCount))
+  }, [visibleCount, allTournois])
 
 useEffect(() => {
 	loadTournaments()

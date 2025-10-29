@@ -185,30 +185,35 @@ return (
 					</CardContent>
 					</Card>
 				</motion.div>
+				
+				<motion.div whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 200 }}>
+					<Card className="border-2 hover:border-pink-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
+						<CardHeader>
+							<div className="w-12 h-12 bg-gradient-to-br from-pink-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
+							<Trophy className="h-6 w-6 text-white" />
+							</div>
+							<CardTitle>Résultats récents</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<CardDescription>Analysez vos derniers matchs et performances.</CardDescription>
+						</CardContent>
+					</Card>
+				</motion.div>
 
-				<Card className="border-2 hover:border-pink-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
-					<CardHeader>
-						<div className="w-12 h-12 bg-gradient-to-br from-pink-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
-						<Trophy className="h-6 w-6 text-white" />
-						</div>
-						<CardTitle>Résultats récents</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<CardDescription>Analysez vos derniers matchs et performances.</CardDescription>
-					</CardContent>
-				</Card>
-
-				<Card className="border-2 hover:border-indigo-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
-					<CardHeader>
-						<div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
-						<TrendingUp className="h-6 w-6 text-white" />
-						</div>
-						<CardTitle>Progression</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<CardDescription>Suivez votre évolution de classement et vos objectifs.</CardDescription>
-					</CardContent>
-				</Card>
+				<motion.div whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 200 }}>
+					<Card className="border-2 hover:border-indigo-600 hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-xl">
+						<CardHeader>
+							<div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mb-3">
+							<TrendingUp className="h-6 w-6 text-white" />
+							</div>
+							<CardTitle>Progression</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<CardDescription>Suivez votre évolution de classement et vos objectifs.</CardDescription>
+						</CardContent>
+					</Card>
+				</motion.div>
+				
 
 				{/* <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/scheduling')}>
 					<CardHeader>
