@@ -1,16 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/app/lib/supabase/supabase'
 import { Trophy, Calendar, CalendarDays, TrendingUp, MapPin, User as UserIcon, LogOut, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Profile } from '@/app/types/profile'
-import type { User } from '@supabase/supabase-js'
 import { motion } from "framer-motion";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useSupabase } from "../providers";
+import { User } from "@supabase/supabase-js";
 
 export default function DashboardPage() {
 const COLORS = {
@@ -22,12 +21,35 @@ background: "bg-gradient-to-br from-purple-50 via-white to-pink-50"
 
 const router = useRouter()	
 
-const supabase = createClientComponentClient()
-const [user, setUser] = useState<any>(null)
-const [loading, setLoading] = useState(true)
+const {supabase} = useSupabase()
+const [user, setUser] = useState<User | null >(null)
 const [profile, setProfile] = useState<Profile | null>(null);
 const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 const [profileLoading, setProfileLoading] = useState(true); // loading flag
+
+// Récupération de l'utilisateur pour savoir si on le garde connecté
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error || !data?.user) {
+          console.warn("Aucun utilisateur valide, redirection vers /login");
+        //   router.replace("/login");
+          return;
+        }
+
+        setUser(data.user);
+		setProfileLoading(false)
+        console.log("Utilisateur connecté :", data.user);
+      } catch (err) {
+        console.error("Erreur récupération user :", err);
+        // router.replace("/login");
+      }
+    };
+
+    fetchUser();
+  }, [router, supabase]);
 
 // Récupération des données de l'utilisateur
   useEffect(() => {
@@ -52,30 +74,26 @@ const [profileLoading, setProfileLoading] = useState(true); // loading flag
 
   }, [user]);
 
-useEffect(() => {
-	const loadStats = async () => {
-		try {
-		const response = await fetch('/api/stats', {
-			headers: {
-			'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-			}
-		})
-		const data = await response.json()
-		setStats(data)
-		} catch (error) {
-		console.error('Error loading stats:', error)
-		}
-	};
-	loadStats()
-}, [user])
+// useEffect(() => {
+// 	const loadStats = async () => {
+// 		try {
+// 		const response = await fetch('/api/stats', {
+// 			headers: {
+// 			'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+// 			}
+// 		})
+// 		const data = await response.json()
+// 		setStats(data)
+// 		} catch (error) {
+// 		console.error('Error loading stats:', error)
+// 		}
+// 	};
+// 	loadStats()
+// }, [user])
 
+console.log(profileLoading)
 
-const handleLogout = async () => {
-	await supabase.auth.signOut()
-	router.push('/')
-}
-
-if (loading) {
+if (profileLoading) {
 	return (
 	<div className="min-h-screen bg-gray-50 flex items-center justify-center">
 		<div className="text-center">
@@ -86,6 +104,7 @@ if (loading) {
 	)
 }
 
+
 return (
 	<div className="min-h-screen bg-gray-50">
 		
@@ -94,7 +113,7 @@ return (
 					<h1 className="text-4xl font-bold bg-gradient-to-r from-[#170647] via-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">
 						Tableau de bord
 					</h1>
-					<h2 className="text-lg font-semibold mb-2">Bonjour {user.nom}</h2>
+					<h2 className="text-lg font-semibold mb-2">Bonjour {profile?.firstname}</h2>
 
 
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -154,7 +173,7 @@ return (
 
 				{/* Stats Cards */}
 				<div className="grid md:grid-cols-4 gap-6 mb-8">
-			<Card>
+			{/* <Card>
 				<CardHeader className="flex flex-row items-center justify-between pb-2">
 				<CardTitle className="text-sm font-medium text-gray-600">
 					Tournois planifiés
@@ -200,7 +219,7 @@ return (
 				<CardContent>
 				<div className="text-2xl font-bold">{stats?.winRate || 0}%</div>
 				</CardContent>
-			</Card>
+			</Card> */}
 			</div>
 
 			{/* Quick Actions */}

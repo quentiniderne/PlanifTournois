@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/app/lib/supabase/supabase";
+import { useSupabase } from "../providers";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Trophy, Sparkles, LogIn } from "lucide-react";
@@ -11,6 +11,7 @@ import { useEffect } from 'react'
 
 
 export default function LoginPage() {
+  const { supabase } = useSupabase(); // ← Remplace createClientComponentClient
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);

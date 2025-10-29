@@ -6,6 +6,8 @@ import "./globals.css";
 import HeaderClient from "@/app/components/HeaderClient";
 import { usePathname } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
+import { Providers } from "./providers";
+
 
 const geistSans = Geist({
 variable: "--font-geist-sans",
@@ -26,8 +28,10 @@ const pathname = usePathname();
 return (
 	<html lang="fr">
 		<body className="bg-gray-50 text-gray-900">
-			<Navbar />
-			<main>{children}</main>
+			<Providers>
+				<Navbar />
+				<main>{children}</main>
+			</Providers>
 		</body>
 	</html>
 );
