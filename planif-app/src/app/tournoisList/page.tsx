@@ -296,8 +296,63 @@ export default function TournamentsList() {
                     </div>
                   )}
                 </div>
+				
+				<div className="mt-4 flex flex-col gap-2">
+					<TooltipProvider>
+						<Tooltip>
+						<TooltipTrigger asChild>
+							<span className="inline-block w-full">
+							{new Date(t.datfin ? t.datfin : t.datdeb) < new Date() ? (
+								<Button
+								disabled
+								className="w-full cursor-not-allowed bg-gray-300 text-black cursor-not-allowed opacity-80"
+								>
+								<Calendar className="w-4 h-4 mr-2" />
+								Tournoi terminé
+								</Button>
+							) : isInCart(t.idtournoi) ? (
+								<Button
+								disabled
+								className="w-full bg-green-600 text-white cursor-not-allowed"
+								>
+								<Check className="w-4 h-4 mr-2" />
+								Ajouté à la planification
+								</Button>
+							) : (
+								<Button
+								className="w-full bg-gradient-to-r from-[#170647] to-purple-600 hover:opacity-90"
+								onClick={() => handleSchedule(t)}
+								>
+								<Plus className="w-4 h-4 mr-2" />
+								Planifier
+								</Button>
+							)}
+							</span>
+						</TooltipTrigger>
 
-                <div className="mt-4 flex flex-col gap-2">
+						{new Date(t.datfin ? t.datfin : t.datdeb) < new Date() && (
+							<TooltipContent>
+							<p>Le tournoi est terminé, vous ne pouvez pas le planifier.</p>
+							</TooltipContent>
+						)}
+
+						{isInCart(t.idtournoi) && (
+							<TooltipContent>
+							<p>Ce tournoi est déjà dans votre planification.</p>
+							</TooltipContent>
+						)}
+						</Tooltip>
+					</TooltipProvider>
+
+					<Button
+						variant="outline"
+						onClick={() => window.open(`https://tenup.fft.fr/tournoi/${t.idtournoi}`, "_blank")}
+					>
+						<ExternalLink className="w-4 h-4 mr-2" /> TenUp
+					</Button>
+					</div>
+
+                {/* <div className="mt-4 flex flex-col gap-2">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -337,7 +392,7 @@ export default function TournamentsList() {
                   <Button variant="outline" onClick={() => window.open(`https://tenup.fft.fr/tournoi/${t.idtournoi}`, '_blank')}>
                     <ExternalLink className="w-4 h-4 mr-2" /> TenUp
                   </Button>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
           ))
