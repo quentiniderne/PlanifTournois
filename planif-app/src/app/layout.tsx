@@ -7,6 +7,7 @@ import HeaderClient from "@/app/components/HeaderClient";
 import { usePathname } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import { Providers } from "./providers";
+import { PlanificationCartProvider } from '@/app/components/PlanificationCartContext'
 
 
 const geistSans = Geist({
@@ -29,8 +30,10 @@ return (
 	<html lang="fr">
 		<body className="bg-gray-50 text-gray-900">
 			<Providers>
-				<Navbar />
-				<main>{children}</main>
+				<PlanificationCartProvider>
+					<Navbar />
+					<main>{children}</main>
+				</PlanificationCartProvider>
 			</Providers>
 		</body>
 	</html>
