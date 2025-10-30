@@ -10,7 +10,10 @@ import { Badge } from "@/components/ui/badge"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 
 export default function TournamentsList() {
 const {supabase} = useSupabase()
@@ -18,12 +21,20 @@ const [tournaments, setTournaments] = useState<any[]>([])
 const [filtered, setFiltered] = useState<any[]>([])
 const [visibleCount, setVisibleCount] = useState(50)
 const [search, setSearch] = useState('')
-const [selectedSurfaces, setSelectedSurfaces] = useState<string[]>([]) // ✅ plusieurs surfaces sélectionnées
-const [availableSurfaces, setAvailableSurfaces] = useState<string[]>([]) // ✅ surfaces uniques extraites
+const [selectedSurfaces, setSelectedSurfaces] = useState<string[]>([])
+const [availableSurfaces, setAvailableSurfaces] = useState<string[]>([])
 const [categoryFilter, setCategoryFilter] = useState<'all' | 'junior' | 'senior'>('all')
 const [orderFilter, setOrderFilter] = useState<'all' | 'prize' | 'datedeb' | 'datfin'>('all')
 const [loading, setLoading] = useState(true)
 const loaderRef = useRef<HTMLDivElement | null>(null)
+
+// ✅ Nouveaux états pour les dates
+const [dateDebut, setDateDebut] = useState<Date>(new Date())
+const [dateFin, setDateFin] = useState<Date>(() => {
+	const sixMonthsLater = new Date()
+	sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6)
+	return sixMonthsLater
+})
 
 useEffect(() => {
 	loadTournaments()
@@ -31,7 +42,7 @@ useEffect(() => {
 
 useEffect(() => {
 	filterTournaments()
-}, [search, selectedSurfaces, categoryFilter, orderFilter, tournaments])
+}, [search, selectedSurfaces, categoryFilter, orderFilter, dateDebut, dateFin, tournaments])
 
 const loadTournaments = async () => {
 	const { data, error } = await supabase
@@ -43,7 +54,6 @@ const loadTournaments = async () => {
 	else {
 	setTournaments(data || [])
 
-	// ✅ Extraire surfaces uniques
 	const surfaces = Array.from(
 		new Set(
 		data?.flatMap(t =>
@@ -69,7 +79,6 @@ const filterTournaments = () => {
 	)
 	}
 
-	// ✅ Nouveau filtre multi-surfaces
 	if (selectedSurfaces.length > 0) {
 	temp = temp.filter(t => {
 		const tSurfaces = t.surface?.split(',').map((s: string) => s.trim()) || []
@@ -82,6 +91,14 @@ const filterTournaments = () => {
 		categoryFilter === 'junior' ? t.junior === 1 : t.senior === 1
 	)
 	}
+
+	// ✅ Filtre par dates
+	temp = temp.filter(t => {
+		
+		const tDebut = new Date(t.datdeb)
+		const tFin = new Date(t.datfin)
+		return tDebut >= dateDebut && tFin <= dateFin
+	})
 
 	switch (orderFilter) {
 	case 'prize':
@@ -131,15 +148,52 @@ return (
 	<div className="container mx-auto px-4 py-8">
 	<h1 className="text-3xl font-bold mb-6">Liste des tournois</h1>
 
-	{/* Filtres */}
-	<div className="grid md:grid-cols-4 gap-4 mb-8">
+	{/* Filtres - première ligne */}
+	<div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
 		<Input
 		placeholder="Recherche nom ou ville..."
 		value={search}
 		onChange={(e) => setSearch(e.target.value)}
 		/>
 
-		{/* ✅ Multi-select surfaces */}
+		{/* ✅ Date picker début */}
+		<Popover>
+		<PopoverTrigger asChild>
+			<Button variant="outline" className="justify-start text-left font-normal">
+			<Calendar className="mr-2 h-4 w-4" />
+			{dateDebut ? format(dateDebut, "dd/MM/yyyy", { locale: fr }) : "Date début"}
+			</Button>
+		</PopoverTrigger>
+		<PopoverContent className="w-auto p-0">
+			<CalendarComponent
+			mode="single"
+			selected={dateDebut}
+			onSelect={(date) => date && setDateDebut(date)}
+			initialFocus
+			locale={fr}
+			/>
+		</PopoverContent>
+		</Popover>
+
+		{/* ✅ Date picker fin */}
+		<Popover>
+		<PopoverTrigger asChild>
+			<Button variant="outline" className="justify-start text-left font-normal">
+			<Calendar className="mr-2 h-4 w-4" />
+			{dateFin ? format(dateFin, "dd/MM/yyyy", { locale: fr }) : "Date fin"}
+			</Button>
+		</PopoverTrigger>
+		<PopoverContent className="w-auto p-0">
+			<CalendarComponent
+			mode="single"
+			selected={dateFin}
+			onSelect={(date) => date && setDateFin(date)}
+			initialFocus
+			locale={fr}
+			/>
+		</PopoverContent>
+		</Popover>
+
 		<DropdownMenu>
 		<DropdownMenuTrigger asChild>
 			<Button variant="outline" className="justify-between">
@@ -178,7 +232,10 @@ return (
 			<SelectItem value="senior">Senior</SelectItem>
 		</SelectContent>
 		</Select>
+	</div>
 
+	{/* Filtres - deuxième ligne */}
+	<div className="grid md:grid-cols-3 gap-4 mb-8">
 		<Select value={orderFilter} onValueChange={setOrderFilter}>
 		<SelectTrigger>
 			<SelectValue placeholder="Trier par" />
@@ -235,27 +292,24 @@ return (
 				</div>
 
 				<div className="mt-4 flex flex-col gap-2">
-				{/* <Button className="bg-gradient-to-r from-[#170647] to-purple-600" onClick={() => handleSchedule(t.idtournoi)}>
-					Planifier
-				</Button> */}
 				<TooltipProvider>
 					<Tooltip>
-						<TooltipTrigger asChild>
-							<span>
-								<Button
+					<TooltipTrigger asChild>
+						<span>
+							<Button
 								className="bg-gradient-to-r from-[#170647] to-purple-600 w-full"
-								disabled={new Date(t.datfin) < new Date()}
+								disabled={new Date(t.datfin ? t.datfin : t.datdeb) < new Date()}
 								onClick={() => handleSchedule(t.idtournoi)}
-								>
+							>
 								Planifier
-								</Button>
-							</span>
-						</TooltipTrigger>
-						{new Date(t.datfin) < new Date() && (
+							</Button>
+						</span>
+					</TooltipTrigger>
+					{new Date(t.datfin ? t.datfin : t.datdeb) < new Date() && (
 						<TooltipContent>
-							<p>Le tournoi est terminé, vous ne pouvez pas le planifier.</p>
+						<p>Le tournoi est terminé, vous ne pouvez pas le planifier.</p>
 						</TooltipContent>
-						)}
+					)}
 					</Tooltip>
 				</TooltipProvider>
 
